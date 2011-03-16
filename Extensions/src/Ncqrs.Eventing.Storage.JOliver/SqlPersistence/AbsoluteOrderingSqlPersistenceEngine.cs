@@ -100,11 +100,12 @@ namespace Ncqrs.Eventing.Storage.JOliver.SqlPersistence
             return new TransactionScope(TransactionScopeOption.Suppress);
         }
 
-        private static TransactionOptions GetTransactionOptions()
+        protected static TransactionOptions GetTransactionOptions()
         {
             return new TransactionOptions
             {
-                IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted,
+                //IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted,
+                IsolationLevel = System.Transactions.IsolationLevel.RepeatableRead,
                 Timeout = TransactionManager.MaximumTimeout
             };
         }
