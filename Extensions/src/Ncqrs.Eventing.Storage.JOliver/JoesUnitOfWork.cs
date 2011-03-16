@@ -105,6 +105,8 @@ namespace Ncqrs.Eventing.Storage.JOliver
 
         public override void Accept()
         {
+            try
+            {
             Log.DebugFormat("Accepting unit of work {0}", this);
             foreach (IEventStream trackedStream in _trackedStreams.Values)
             {
@@ -116,6 +118,16 @@ namespace Ncqrs.Eventing.Storage.JOliver
             Log.DebugFormat("Publishing events for command {0} to event bus", _commitId);
             _eventBus.Publish(_eventStream);
             CreateSnapshots();
+            }
+            catch (Exception)
+            {
+                var opt = _eventStore as OptimisticEventStore;
+                if (opt != null)
+                {
+                    opt.ResetTracker();
+                }
+                throw;
+            }
         }
 
         private void CreateSnapshots()
